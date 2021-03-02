@@ -5,6 +5,7 @@ import Searchbar from "./components/Searchbar/Searchbar";
 import Loader from "./components/Loader/Loader";
 import ImageGallery from "./components/ImageGallery/ImageGallery";
 import rest from "./services/rest";
+import Modal from "./components/Modal/Modal";
 
 class App extends Component {
   state = {
@@ -13,6 +14,8 @@ class App extends Component {
     currentPage: "",
     isLoading: true,
     error: false,
+    showModal: false,
+    largeImageURL: "",
   };
 
   // componentDidMount() {
@@ -56,15 +59,30 @@ class App extends Component {
   onSubmit = (quary) => {
     this.setState({ searchQuary: quary, currentPage: 1 });
   };
-
+  toggleModal = (largeImageURL) => {
+    this.setState((prevState) => ({
+      showModal: !prevState.showModal,
+      largeImageURL: largeImageURL,
+    }));
+  };
   render() {
-    const { images, isLoading, error } = this.state;
+    const { images, isLoading, error, showModal, largeImageURL } = this.state;
     const shouldRenderLoadMoreButton = images.length > 0 && !isLoading;
     return (
       <div className={styles.App}>
         <Searchbar onSubmit={this.onSubmit}></Searchbar>
         {error && <h2>Something wrong!!!</h2>}
-        {isLoading ? <Loader /> : <ImageGallery images={images}></ImageGallery>}
+        {showModal && <Modal largeImageURL={largeImageURL} />}
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <ImageGallery
+            toggleModal={this.toggleModal}
+            showModal={showModal}
+            images={images}
+          ></ImageGallery>
+        )}
+
         {shouldRenderLoadMoreButton && (
           <Button loadMore={this.loadMore}></Button>
         )}
