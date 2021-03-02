@@ -2,10 +2,19 @@ import React from "react";
 import ImageGalleryItem from "../ImageGalleryItem/ImageGalleryItem";
 import styles from "./ImageGallery.module.css";
 
-const ImageGallery = () => {
+const ImageGallery = ({ images,isLoading }) => {
   return (
     <ul className={styles.ImageGallery}>
-      <ImageGalleryItem />
+      {images.map(({ id, largeImageURL, previewURL, type }) => {
+        return (
+          <ImageGalleryItem
+            key={id}
+            largeImageURL={largeImageURL}
+            previewURL={previewURL}
+            type={type}
+          />
+        );
+      })}
     </ul>
   );
 };

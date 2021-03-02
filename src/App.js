@@ -2,27 +2,72 @@ import styles from "./App.module.css";
 import Button from "./components/Button/Button";
 import React, { Component } from "react";
 import Searchbar from "./components/Searchbar/Searchbar";
-import axios from "axios";
-const keyApi = "18623540-b96dabcd57ccb87763c2123d9";
+import Loader from "./components/Loader/Loader";
+import ImageGallery from "./components/ImageGallery/ImageGallery";
+import rest from "./services/rest";
+
 class App extends Component {
   state = {
     images: [],
-    page: 1,
-    quary: "forest",
+    searchQuary: "",
+    currentPage: "",
+    isLoading: true,
+    error: false,
   };
 
-  componentDidMount() {
-    const { quary, page } = this.state;
-    const baseUrl = `https://pixabay.com/api/?q=${quary}&page=${page}&key=${keyApi}&image_type=photo&orientation=horizontal&per_page=12`;
-
-    axios.get(baseUrl).then((response) => console.log(response));
+  // componentDidMount() {
+  //   const { searchQuary, currentPage } = this.state;
+  //   rest(searchQuary, currentPage).then(({ data }) =>
+  //     this.setState({ images: data.hits })
+  //   );
+  // }
+  async componentDidUpdate(prevProps, prevState) {
+    const { searchQuary, currentPage } = this.state;
+    if (
+      currentPage !== prevState.currentPage ||
+      searchQuary !== prevState.searchQuary
+    ) {
+      try {
+        const result = await rest(searchQuary, currentPage);
+        console.log(result);
+        this.setState((prevState) => ({
+          images: [...prevState.images, ...result.data.hits],
+          // currentPage: currentPage + 1,
+          isLoading: false,
+        }));
+        window.scrollTo({
+          top: document.documentElement.scrollHeight,
+          behavior: "smooth",
+        });
+      } catch {
+        this.setState({
+          error: true,
+          isLoading: false,
+        });
+      }
+    }
   }
 
+  loadMore = () => {
+    // const { currentPage,images } = this.state;
+    this.setState((prevState) => ({ currentPage: prevState.currentPage + 1 }));
+  };
+
+  onSubmit = (quary) => {
+    this.setState({ searchQuary: quary, currentPage: 1 });
+  };
+
   render() {
+    const { images, isLoading, error } = this.state;
+    const shouldRenderLoadMoreButton = images.length > 0 && !isLoading;
     return (
       <div className={styles.App}>
-        <Searchbar></Searchbar>
-        <Button></Button>
+        <Searchbar onSubmit={this.onSubmit}></Searchbar>
+        {error && <h2>Something wrong!!!</h2>}
+        {isLoading ? <Loader /> : <ImageGallery images={images}></ImageGallery>}
+        {shouldRenderLoadMoreButton && (
+          <Button loadMore={this.loadMore}></Button>
+        )}
       </div>
     );
   }

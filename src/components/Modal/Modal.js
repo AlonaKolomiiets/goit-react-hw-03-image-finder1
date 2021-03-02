@@ -1,11 +1,11 @@
 import React from "react";
 import styles from "./Modal.module.css";
 
-const Modal = () => {
+const Modal = ({ src, alt }) => {
   return (
     <div className={styles.Overlay}>
       <div className={styles.Modal}>
-        <img src="" alt="" />
+        <img src={src} alt={alt} />
       </div>
     </div>
   );

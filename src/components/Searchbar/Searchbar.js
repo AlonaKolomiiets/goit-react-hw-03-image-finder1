@@ -6,7 +6,6 @@ const Searchbar = ({ onSubmit }) => {
   return (
     <header className={styles.Searchbar}>
       <SearchForm onSubmit={onSubmit}></SearchForm>
-
     </header>
   );
 };
