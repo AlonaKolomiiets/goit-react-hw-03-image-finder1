@@ -1,19 +1,18 @@
-import React, { useState } from "react";
+import React from "react";
 import ImageGalleryItem from "../ImageGalleryItem/ImageGalleryItem";
-import Modal from "../Modal/Modal";
 import styles from "./ImageGallery.module.css";
 
-const ImageGallery = ({ images, isLoading, toggleModal, showModal }) => {
+const ImageGallery = ({ images, toggleModal }) => {
   return (
     <ul className={styles.ImageGallery}>
-      {images.map(({ id, largeImageURL, previewURL, type }) => {
+      {images.map((image) => {
+        const { id, previewURL, tags } = image;
         return (
           <ImageGalleryItem
-            toggleModal={toggleModal}
+            toggleModal={() => toggleModal(image)}
             key={id}
-            largeImageURL={largeImageURL}
             previewURL={previewURL}
-            type={type}
+            type={tags}
           />
         );
       })}

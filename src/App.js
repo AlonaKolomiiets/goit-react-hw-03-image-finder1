@@ -11,19 +11,13 @@ class App extends Component {
   state = {
     images: [],
     searchQuary: "",
-    currentPage: "",
-    isLoading: true,
+    currentPage: undefined,
+    isLoading: false,
     error: false,
     showModal: false,
-    largeImageURL: "",
+    selectedImage: undefined,
   };
 
-  // componentDidMount() {
-  //   const { searchQuary, currentPage } = this.state;
-  //   rest(searchQuary, currentPage).then(({ data }) =>
-  //     this.setState({ images: data.hits })
-  //   );
-  // }
   async componentDidUpdate(prevProps, prevState) {
     const { searchQuary, currentPage } = this.state;
     if (
@@ -31,11 +25,11 @@ class App extends Component {
       searchQuary !== prevState.searchQuary
     ) {
       try {
+        this.setState({ isLoading: true });
         const result = await rest(searchQuary, currentPage);
-        console.log(result);
+        // console.log(result);
         this.setState((prevState) => ({
           images: [...prevState.images, ...result.data.hits],
-          // currentPage: currentPage + 1,
           isLoading: false,
         }));
         window.scrollTo({
@@ -52,27 +46,30 @@ class App extends Component {
   }
 
   loadMore = () => {
-    // const { currentPage,images } = this.state;
     this.setState((prevState) => ({ currentPage: prevState.currentPage + 1 }));
   };
 
   onSubmit = (quary) => {
     this.setState({ searchQuary: quary, currentPage: 1 });
   };
-  toggleModal = (largeImageURL) => {
+  toggleModal = (image) => {
     this.setState((prevState) => ({
       showModal: !prevState.showModal,
-      largeImageURL: largeImageURL,
+      selectedImage: image,
     }));
   };
   render() {
-    const { images, isLoading, error, showModal, largeImageURL } = this.state;
+    const { images, isLoading, error, showModal, selectedImage } = this.state;
     const shouldRenderLoadMoreButton = images.length > 0 && !isLoading;
     return (
       <div className={styles.App}>
         <Searchbar onSubmit={this.onSubmit}></Searchbar>
         {error && <h2>Something wrong!!!</h2>}
-        {showModal && <Modal largeImageURL={largeImageURL} />}
+        {showModal && (
+          <Modal toggleModal={this.toggleModal}>
+            <img src={selectedImage.largeImageURL} alt={selectedImage.tags} />
+          </Modal>
+        )}
         {isLoading ? (
           <Loader />
         ) : (
@@ -82,7 +79,6 @@ class App extends Component {
             images={images}
           ></ImageGallery>
         )}
-
         {shouldRenderLoadMoreButton && (
           <Button loadMore={this.loadMore}></Button>
         )}
