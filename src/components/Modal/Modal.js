@@ -14,8 +14,14 @@ const Modal = ({ children, toggleModal }) => {
     };
   }, [toggleModal]);
 
+  const handleBackdropClick = (e) => {
+    if (e.currentTarget === e.target) {
+      toggleModal();
+    }
+  };
+
   return (
-    <div onClick={toggleModal} className={styles.Overlay}>
+    <div onClick={handleBackdropClick} className={styles.Overlay}>
       <div className={styles.Modal}>{children}</div>
     </div>
   );

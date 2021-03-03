@@ -50,7 +50,7 @@ class App extends Component {
   };
 
   onSubmit = (quary) => {
-    this.setState({ searchQuary: quary, currentPage: 1 });
+    this.setState({ searchQuary: quary, currentPage: 1, images: [] });
   };
   toggleModal = (image) => {
     this.setState((prevState) => ({
